@@ -943,8 +943,7 @@ def blog_page_published_handler(instance, **kwargs):
 @receiver(pre_delete, sender=BlogPage)
 def blog_page_deleted_handler(instance, **kwargs):
     purge_parent_index(BlogIndexPage, instance)
-    if instance in play_filter(BlogPage.objects.live().in_menu().order_by('-date'), 6):
-        purge_homepage()
+    purge_homepage()
 
 
 # Jobs index page
@@ -1204,8 +1203,7 @@ def work_page_published_handler(instance, **kwargs):
 @receiver(pre_delete, sender=WorkPage)
 def work_page_deleted_handler(instance, **kwargs):
     purge_parent_index(WorkIndexPage, instance)
-    if instance in play_filter(WorkPage.objects.filter(live=True), 3):
-        purge_homepage()
+    purge_homepage()
 
 
 # Person page
