@@ -2,6 +2,8 @@ from django import forms
 from django.core.mail import EmailMessage
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
@@ -20,7 +22,9 @@ from wagtail.core.blocks import (CharBlock, FieldBlock, ListBlock,
                                  StreamBlock, StructBlock, TextBlock, URLBlock)
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Orderable, Page
+from wagtail.core.signals import page_published
 from wagtail.documents.edit_handlers import DocumentChooserPanel
+from wagtail.contrib.frontend_cache.utils import PurgeBatch
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.images.edit_handlers import ImageChooserPanel
@@ -31,6 +35,7 @@ from wagtailcaptcha.models import WagtailCaptchaEmailForm
 from wagtailmarkdown.blocks import MarkdownBlock
 
 from tbx.core.utils.cache import get_default_cache_control_decorator
+from tbx.core.utils import play_filter
 
 from .fields import ColorField
 
@@ -729,6 +734,18 @@ class ParticleSnippet(models.Model):
         return self.title
 
 
+def purge_parent_index(index_page_model, child_page):
+    # Purge FE cache for indexes containing specified child page
+    batch = PurgeBatch()
+    batch.add_pages(index_page_model.objects.live().ancestor_of(child_page))
+
+
+def purge_homepage():
+    # Purge FE cache for homepage
+    batch = PurgeBatch()
+    batch.add_page(HomePage.objects.first())
+
+
 # Blog index page
 
 class BlogIndexPageRelatedLink(Orderable, RelatedLink):
@@ -917,6 +934,19 @@ class BlogPage(Page):
     ]
 
 
+@receiver(page_published, sender=BlogPage)
+def blog_page_published_handler(instance, **kwargs):
+    purge_parent_index(BlogIndexPage, instance)
+    purge_homepage()
+
+
+@receiver(pre_delete, sender=BlogPage)
+def blog_page_deleted_handler(instance, **kwargs):
+    purge_parent_index(BlogIndexPage, instance)
+    if instance in play_filter(BlogPage.objects.live().in_menu().order_by('-date'), 6):
+        purge_homepage()
+
+
 # Jobs index page
 class ReasonToJoin(Orderable):
     page = ParentalKey('torchbox.JobIndexPage', related_name='reasons_to_join')
@@ -990,6 +1020,11 @@ class JobIndexPage(Page):
     promote_panels = [
         MultiFieldPanel(Page.promote_panels, "Common page configuration"),
     ]
+
+
+@receiver(page_published, sender=JobIndexPage)
+def job_index_page_published_handler(instance, **kwargs):
+    purge_homepage()
 
 
 # Work page
@@ -1160,6 +1195,19 @@ class WorkIndexPage(Page):
     ]
 
 
+@receiver(page_published, sender=WorkPage)
+def work_page_published_handler(instance, **kwargs):
+    purge_parent_index(WorkIndexPage, instance)
+    purge_homepage()
+
+
+@receiver(pre_delete, sender=WorkPage)
+def work_page_deleted_handler(instance, **kwargs):
+    purge_parent_index(WorkIndexPage, instance)
+    if instance in play_filter(WorkPage.objects.filter(live=True), 3):
+        purge_homepage()
+
+
 # Person page
 class PersonPageRelatedLink(Orderable, RelatedLink):
     page = ParentalKey('torchbox.PersonPage', related_name='related_links')
@@ -1237,6 +1285,16 @@ class PersonIndexPage(Page):
         FieldPanel('senior_management_intro', classname="full"),
         FieldPanel('team_intro', classname="full"),
     ]
+
+
+@receiver(page_published, sender=PersonPage)
+def person_page_published_handler(instance, **kwargs):
+    purge_parent_index(PersonIndexPage, instance)
+
+
+@receiver(pre_delete, sender=PersonPage)
+def person_page_deleted_handler(instance, **kwargs):
+    purge_parent_index(PersonIndexPage, instance)
 
 
 class TshirtPage(Page):
