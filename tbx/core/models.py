@@ -16,6 +16,7 @@ from wagtail.admin.edit_handlers import (FieldPanel, InlinePanel,
                                          StreamFieldPanel)
 from wagtail.admin.utils import send_mail
 from wagtail.contrib.forms.models import AbstractFormField
+from wagtail.contrib.frontend_cache.utils import PurgeBatch
 from wagtail.contrib.settings.models import BaseSetting, register_setting
 from wagtail.core.blocks import (CharBlock, FieldBlock, ListBlock,
                                  PageChooserBlock, RawHTMLBlock, RichTextBlock,
@@ -24,18 +25,17 @@ from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Orderable, Page
 from wagtail.core.signals import page_published
 from wagtail.documents.edit_handlers import DocumentChooserPanel
-from wagtail.contrib.frontend_cache.utils import PurgeBatch
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.images.models import AbstractImage, AbstractRendition, Image
 from wagtail.search import index
 from wagtail.snippets.models import register_snippet
-from wagtailcaptcha.models import WagtailCaptchaEmailForm
 from wagtailmarkdown.blocks import MarkdownBlock
 
-from tbx.core.utils.cache import get_default_cache_control_decorator
 from tbx.core.utils import play_filter
+from tbx.core.utils.cache import get_default_cache_control_decorator
+from wagtailcaptcha.models import WagtailCaptchaEmailForm
 
 from .fields import ColorField
 
