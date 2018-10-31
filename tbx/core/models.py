@@ -738,12 +738,14 @@ def purge_parent_index(index_page_model, child_page):
     # Purge FE cache for indexes containing specified child page
     batch = PurgeBatch()
     batch.add_pages(index_page_model.objects.live().ancestor_of(child_page))
+    batch.purge()
 
 
 def purge_homepage():
     # Purge FE cache for homepage
     batch = PurgeBatch()
     batch.add_page(HomePage.objects.first())
+    batch.purge()
 
 
 # Blog index page
