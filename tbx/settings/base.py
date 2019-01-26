@@ -123,9 +123,10 @@ WSGI_APPLICATION = 'tbx.wsgi.application'
 # https://github.com/kennethreitz/dj-database-url
 
 DATABASES = {
-    'default': dj_database_url.config(conn_max_age=600,
-                                      default=f"postgres:///{APP_NAME}")
-}
+    'default': dj_database_url.config(
+        default='postgres://gyhjwabgbkyvkr:85dcd7aa109fe7ffc8feff5fc4d3d8e77ac552c12cc1abeb8d7843cd41cbaefd@ec2-107-22-238-186.compute-1.amazonaws.com:5432/d5bnog7nbn0l7k',
+        conn_max_age=600)}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
