@@ -1,7 +1,7 @@
 from .base import *  # noqa
 
 # Disable debug mode
-DEBUG = False
+DEBUG = True
 
 
 # Facebook JSSDB app id
