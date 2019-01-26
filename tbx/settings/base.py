@@ -124,7 +124,7 @@ WSGI_APPLICATION = 'tbx.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgres://gyhjwabgbkyvkr:85dcd7aa109fe7ffc8feff5fc4d3d8e77ac552c12cc1abeb8d7843cd41cbaefd@ec2-107-22-238-186.compute-1.amazonaws.com:5432/d5bnog7nbn0l7k',
+        default='postgres://adlxtiuphxriwu:e6356f217592f4a0f400254833fc66eb361a66476dcf4ff71b666a527900dec4@ec2-54-235-67-106.compute-1.amazonaws.com:5432/db5cu96tr0rvfe',
         conn_max_age=600)}
 
 
