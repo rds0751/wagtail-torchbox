@@ -26,3 +26,4 @@ wagtail-markdown==0.5
 Pygments==2.1.3  # for code highlighting in wagtail-markdown
 wagtailfontawesome==1.1.3
 scout-apm==1.1.7
+gunicorn
